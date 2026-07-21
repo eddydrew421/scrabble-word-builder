@@ -3,9 +3,13 @@ import { LetterData, type LetterDataFile } from "../domain/letterData.js";
 import { DictionaryIndex } from "../domain/DictionaryIndex.js";
 
 export class AssetLoadError extends Error {
-  constructor(message: string, readonly cause?: unknown) {
+    
+  override readonly cause?: unknown;
+
+  constructor(message: string, cause?: unknown) {
     super(message);
     this.name = "AssetLoadError";
+    this.cause = cause;
   }
 }
 

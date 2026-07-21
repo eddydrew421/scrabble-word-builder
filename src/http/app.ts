@@ -15,6 +15,7 @@ import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 import { createSolveRouter } from "./routes/solve.js";
 import { createHealthRouter } from "./routes/health.js";
 import type { AppContainer } from "../composition.js";
+import { requestLogger } from "./middleware/requestLogger.js";
 
 export function createApp(container: AppContainer): Express {
 
@@ -24,13 +25,17 @@ export function createApp(container: AppContainer): Express {
 
   app.set("trust proxy", true); // correct client IPs behind an ALB
 
-  app.use(express.json({ limit: "16kb" }));
-
   app.use(requestContext);
+
+  app.use(requestLogger);
+
+  app.use(express.json({ limit: "16kb" }));
 
   app.use(createHealthRouter(container));
 
   app.use("/api/v1", createSolveRouter(container));
+
+  app.get("/probe", (_req, res) => { res.json({ ok: true }); });
 
   app.use(notFoundHandler);
 

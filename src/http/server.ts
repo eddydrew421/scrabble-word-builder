@@ -20,21 +20,52 @@ async function main(): Promise<void> {
 
   const app = createApp(container);
 
-  const server = app.listen(container.config.port, () => {
+  const server = app.listen(container.config.port, "0.0.0.0", () => {
+
+    const address = server.address();
+
     console.log(
       JSON.stringify({
         level: "info",
         message: "Scrabble Word Builder ready",
+        pid: process.pid,
+        boundAddress: typeof address === "object" && address
+          ? `${address.address}:${address.port}` : String(address),
         port: container.config.port,
         dictionarySize: container.stats.dictionarySize,
         indexBuildMs: container.stats.buildMs,
       }),
     );
+
   });
+
+  //Error handling for startup errors, e.g. port in use
+  server.on("error", (error: NodeJS.ErrnoException) => {
+
+    const isPortConflict = error.code === "EADDRINUSE";
+
+    console.error(JSON.stringify({
+      level: "fatal",
+      message: isPortConflict
+        ? `Port ${container.config.port} is already in use`
+        : "Server error",
+      code: error.code,
+      detail: error.message,
+      ...(isPortConflict ? { hint: `lsof -nP -i :${container.config.port}` } : {}),
+    }));
+    process.exit(1);
+  });
+
+  let shuttingDown = false;
 
   const shutdown = (signal: string): void => {
 
-    console.log(JSON.stringify({ level: "info", message: `${signal} received, draining` }));
+    if (shuttingDown) {
+      console.warn(JSON.stringify({ level: "warn", message: `${signal} during shutdown, ignoring` }));
+      return;
+    }
+
+    shuttingDown = true;
 
     const timer = setTimeout(() => {
 
