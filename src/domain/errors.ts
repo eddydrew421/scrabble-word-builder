@@ -5,7 +5,7 @@ These codes are used to identify specific error conditions that may occur during
 
 Why Error taxonomy: 
 The error codes are defined as a constant object, and the SolverErrorCode type is derived from the keys of this object. 
-This allows for type-safe usage of error codes throughout the codebase and managed from one place.
+This allows for type-safe usage of error codes throughout the codebase and managed from just one place.
 
 Machine-readble error codes are useful for programmatic handling of errors, while human-readable messages provide context for developers and users.
 The SolverError class extends the built-in Error class and adds a code property to represent the specific error condition. 

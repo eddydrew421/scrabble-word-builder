@@ -73,6 +73,10 @@ Decision: Create an immutable, pre-scored, pre-sorted dictionary. Single pass wi
 
 Histogram/Frequency Map approach and why it's optimal for scanning a dictionary efficiently.
 
+Early exit optimization is a best-case, not guaranteed.
+
+Pre-sorting moves scoring and tie-breaking to startup and enables early exit, which helps most when the answer scores well. The worst case remains a full linear scan; measured p99 is under 15ms, so a DAWG's complexity isn't justified
+
 # Engineering Simplified
 
 Frequency Map / Histogram approach to validate words from the dictionary.

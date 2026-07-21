@@ -11,6 +11,10 @@ Table is the API contract; it is the single source of truth
 Distinguishing syntax errors from semantic errors
 422 - well formed but semantically invalid (e.g. tile limit exceeded)
 
+400 Bad Request means malformed — I couldn't understand your request. 
+422 Unprocessable Content means well-formed but semantically invalid — I understood you perfectly, and what you asked for is illegal. 
+rack=AIDOORZ&word=QUIZ is a perfectly well-formed request; it's the Scrabble rules it violates, not HTTP.
+
 Envelope structure:
 - status: "success" | "fail" | "error"
 - data: present only on success
