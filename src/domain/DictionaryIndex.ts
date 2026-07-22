@@ -17,7 +17,7 @@ Once scores are static, sorting by (score DESC, word ASC) is also a build-time o
 Decision:
 Why compare strings with < / > as a multi-key comparator vs localeCompare?
 localeCompare is locale-dependent and ~10× slower; 
-for A–Z ASCII, code-point order is alphabetical order, and determinism matters more
+for A–Z ASCII, code-point order is alphabetical order, and determinism matters more here
 
 */
 

@@ -3,12 +3,12 @@
 Strategy for handling how a board word constrains a play. 
 
 Default is "consumes all board letters" (multiset containment) but we also provide a "contains board word substring" option.
-Alternative is stricter and more literal, but rejects legitimate hooks like EARSHOT.
+Alternative is stricter and more literal, but rejects legitimate hooks (like EARSHOT).
 
 The challenge spec says "a word already on the board that the player may build upon" while also instructing us
 to ignore board layout — which admits more than one reading.
 
-We implement both and default to the stricter, more Scrabble-faithful one.
+We implement both and default to the stricter, more Scrabble-faithful one. Not perfect but acceptable for this exercise.
 
 Note: both policies enforce that the candidate word must be longer than the board word, i.e. that at least one tile from the rack is used.
 candidate.length <= boardWord.length → false
@@ -23,14 +23,6 @@ export interface BoardWordContext {
   readonly boardWord: string;
   readonly boardFreq: FrequencyVector;
 }
-
-/**
- * Encodes the (ambiguous) rule for how a board word constrains a play behind one interface.
- * The challenge spec says "a word already on the board that the player may
- * build upon" while also instructing us to ignore board layout — which admits
- * more than one reading. We implement both and default to the stricter,
- * more Scrabble-faithful one.
- */
 
 export interface BoardWordPolicy {
   readonly name: string;

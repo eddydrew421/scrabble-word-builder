@@ -50,6 +50,7 @@ export class LetterData {
       }
 
       scores[index] = info.score;
+      
       tileSupply[index] = info.tiles;
 
     }

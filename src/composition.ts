@@ -1,5 +1,6 @@
 /*
-Composition Root: The composition root is the entry point of the application where all dependencies are composed and wired together. 
+Composition Root 
+The composition root is the entry point of the application where all dependencies are composed and wired together. 
 It is responsible for creating instances of services, loading configurations, and initializing the application. 
 This file serves as the central place to manage the application's dependencies and ensure that everything is properly configured before the application starts running.
 
@@ -7,7 +8,12 @@ Concept:
 Object graphs are constructed in exactly one place, as close to the application entry point as possible
 
 Why:
-Manual composition and layering matters.
+Manual composition and layering matters in this design because it is a small, high-performance, low-latency, single-purpose service.
+The domain is decoupled from the infrastructure, and the infrastructure is decoupled from the domain. 
+The domain is agnostic of the underlying data sources and policies. 
+The infrastructure is agnostic of the domain logic. 
+The composition root is where these two worlds meet.
+
 API entry point and CLI entry point both call createContainer() and both get an identical, fully-wired solver. 
 Zero duplicated wiring, zero chance of the CLI and API diverging in behaviour.
 
