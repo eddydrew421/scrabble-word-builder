@@ -11,33 +11,51 @@ Mission Brief:
 
 ## Quick Start
 
-**With Docker (recommended — one command, no local Node required):**
+There are two ways in. 
 
-```bash
-docker compose up --build -d
+**Running** the service needs only Docker.
+**Developing or verifying the code tests** it needs Node >= 20.11.0.
 
-curl -s -G http://localhost:3000/api/v1/solve \
-  --data-urlencode 'rack=AIDOORW' --data-urlencode 'word=WIZ' | jq
-# -> WIZARD, 19 points
-```
+### Run it (Docker — no Node required)
 
-**Without Docker** (requires Node >= 20.11.0):
+    docker compose up --build -d
 
-```bash
-npm ci
-npm run dev                                    # API on http://localhost:3000
-npm run cli -- --rack AIDOORW --word WIZ       # CLI
-npm test                                       # full test suite
-```
+    curl -s -G http://localhost:3000/api/v1/solve \
+      --data-urlencode 'rack=AIDOORW' --data-urlencode 'word=WIZ' | jq
+    # -> WIZARD, 19 points
 
-> **Shell note:** always single-quote or use `curl -G --data-urlencode` for query strings. In zsh, an unquoted `&` backgrounds the command and `?` is treated as a glob.
+    docker compose down     # when finished
 
+### Develop & test it (Node required)
+
+Install dependencies first — this is what makes `tsc`, `vitest`, and the
+verify harness available locally:
+
+    npm ci                 # installs all dependencies, including dev tools
+
+    npm run dev            # API on http://localhost:3000 (hot reload)
+    npm run cli -- --rack AIDOORW --word WIZ
+    npm test               # unit + integration suite
+    npm run typecheck      # type-checks src/ and tests/
+
+The end-to-end verification harness needs a running server **and** local
+dependencies. In one terminal:
+
+    npm run dev
+
+In another:
+
+    PORT=3000 npm run verify
+
+> **Shell note:** always single-quote URLs or use `curl -G --data-urlencode`
+> for query strings. In zsh an unquoted `&` backgrounds the command and `?`
+> is treated as a glob.
 ---
 
 ## The Four Challenge Examples
 
 Every example from the brief is reproduced as an executable test in
-[`tests/domain/challengeExamples.test.ts`](tests/domain/challengeExamples.test.ts), run against the shipped dictionary and tile distribution.
+[`tests/domain/challengeExamples.test.ts`](tests/domain/challengeExamples.test.ts), run against the shipped dictionary and tile distribution in Node.js.
 
 | # | rack | word | Result | HTTP | Notes |
 |---|------|------|--------|------|-------|
@@ -46,11 +64,6 @@ Every example from the brief is reproduced as an executable test in
 | 3 | `AIDOORZ` | `QUIZ` | `TILE_LIMIT_EXCEEDED` | 422 | Only one `Z` tile exists in the game |
 | 4 | `AIDOORWZ` | any | `RACK_TOO_LONG` | 400 | Rack exceeds 7 tiles |
 
-Verify them all against a running instance:
-
-```bash
-PORT=3000 npm run verify
-```
 
 ---
 
@@ -355,6 +368,14 @@ The win is still real — per-request scoring, allocation, and sorting are elimi
 Measured p99 is under 15 ms, which is why a DAWG or GADDAG was **considered and rejected upon researching**. 
 
 At 10× the dictionary the frequency vectors would still fit comfortably in memory; the first move would be bucketing by maximum achievable score to skip whole ranges, and only then a specialised structure — after measuring.
+
+No solution query exampe
+
+Ex:
+rack=AEIOUYT word=UNDERSTAND → 50ms, candidatesExamined: 168551
+rack=A word=ABCDEFGHIJKLMNO  → 48ms, candidatesExamined: 168551
+
+A no-solution query is the worst case at a full scan, ~50ms, still well within budget.
 
 ---
 
